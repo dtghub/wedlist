@@ -31,31 +31,23 @@ if ($ENV{'HTTP_REFERER'} !~ m#^http://www.todd.uklinux.net/#) {
 
 print "<H2>Please confirm your cancelled item;</H2>";
 
-# Get a list of items already selected
+# Get the ID of the item selected
+@temp=split(/==/,$ENV{QUERY_STRING});
+$selecteditem=$temp[1];
+
+# Get the table details from a csv file and output as a perl data structure
 
 # First, read the csv file into an array...
-open (TEMP, "<reserveditems.cgi") || die "<P>ERROR; Couldn't open reserved list";
-@temp = <TEMP>;
-close (TEMP);
-
-# Now generate a hash
-%reserveditems=();
-foreach $item (@temp) {
-    my @list=split(/,/, $item);
-    $reserveditems{ shift (@list) }= \@list;
-}
-
-
-
-
-# Get the table details from a csv file and output to the display
-
-# First, read the csv file into an array...
-open (TEMP, "wedtablelst.cgi") || die "<P>ERROR; Couldn't open wedding list file";
+open (TEMP, "<wedtablelist.cgi");
 @wedfile = <TEMP>;
 close (TEMP);
 
 print "<TABLE align=center border bgcolor=aqua cellpadding=2 width=95\%>";
+
+
+
+
+
 
 # Now, build a table
 foreach $item (@wedfile) {
@@ -103,6 +95,17 @@ foreach $item (@wedfile) {
     }
     print "</TR>\n";
 }
+
+
+
+# Now generate a hash
+%reserveditems=();
+foreach $item (@temp) {
+    my @list=split(/,/, $item);
+    $reserveditems{ shift (@list) }= \@list;
+}
+
+
 
 print "</TABLE>\n";
 print "</BODY></HTML>\n";
