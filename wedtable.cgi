@@ -79,15 +79,32 @@ foreach $item (@wedfile) {
     if ($key eq "Iem Code") {
         $cellformat="TD BGCOLOR=\"#6699ff\"><P ALIGN=CENTER>";
     }
-    print "<TR>${ cellformat }<B>$key</B></P></TD>";
+    print "<TR>${cellformat}<B>$key</B></P></TD>";
     foreach my $i (@list) {
-        print "${ cellformat }$i</P><TD>" if ($i)
+        print "${cellformat}$i</P><TD>" if ($i)
         print "$cellformat&nbsp</P></TD>" unless ($i);
     }
     if ($key eq "Item Code") {
         print "<TD></TD>";
     }
     elseif ($itemhasnotbeenreserved) {
-        print "${ cellformat }Click <A HREF=\http://www.todd.uklinux.net"
+        print "${cellformat}Click <A HREF=\"http://www.todd.uklinux.net/wedlisttest/unreserveitemconfirm.cgi\></P></TD>";
     }
+    elseif ($reserveddetails[1]) eq $ENV{'REMOTE_USER'}) {
+        print "${cellformat}Click <A HREF=\"http://www.todd.uklinux.net/wedlisttest/unreserveitemconfirm.cgi\></P></TD>";
+    }
+    elseif ($reserveddetails[1]) -~ $ENV{'REMOTE_USER'}) {
+        print "${cellformat}Click <A HREF=\"http://www.todd.uklinux.net/wedlisttest/unreserveitemconfirm.cgi\></P></TD>";
+    }
+    else {
+        print "${cellformat}This item has been reserved.</P></TD>";
+    }
+    print "</TR>\n";
 }
+
+print "</TABLE>\n";
+print "</BODY></HTML>\n";
+
+
+
+# The links in the elseif clauses need fixed
