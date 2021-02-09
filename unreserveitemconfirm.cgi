@@ -44,6 +44,45 @@ close (TEMP);
 
 print "<TABLE align=center border bgcolor=aqua cellpadding=2 width=95\%>";
 
+# Now, locate and dispay the selected item
+foreach $item (@wedfile) {
+    my @list=split(/,/, $item);
+    $key=shift(@list);
+    if ($key eq $selecteditem) {
+        print "<TR><TD><B>$key</B>";
+        foreach my $i (@list) {
+            print "<TD>$i";
+            print "&nbsp" unless ($i);
+        }
+        print "</TR>\n";
+    }
+
+print "</TABLE>\n";
+
+# Now generate a hash
+
+foreach $item (@temp) {
+    my @list=split(/,/, $item);
+    $reserveditems{ shift (@list) }= \@list;
+}
+@reserveddetails = @{$reserveditems{$selecteditem}};
+
+# Check no-one's been editing location info.
+if (($ENV{'REMOTE_USER'} eq $reserveddetails[1]) or ("derekhelenatodd" =~ $ENV{'REMOTE_USER'})) {
+    print "<P>Reserved by; $reserveddetails[1]</P>\n";
+    print "<P>&nbsp;</P>\n";
+    print "<P>Reserved at; $reserveddetails[2]</P>\n";
+    print "<P>&nbsp;</P>\n";
+    $comments=$reserveddetails[3];
+    $comments =~ s/;/,/g;
+    print "<P>Comments; $comments</P>\n";
+    print "<P>&nbsp;</P>\n";
+    print "<P>&nbsp;</P>\n";
+
+    $time = scalar time();
+    print "<P align=center><STRONG>Click <A href=\"unreserveitem.cgi?item=$selecteditem\">here</A></STRONG>";
+    
+}
 
 
 
