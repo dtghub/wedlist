@@ -59,6 +59,10 @@ foreach $item (@wedfile) {
 
 print "</TABLE>\n";
 
+open (TEMP, "<reserveditems.cgi") || die "<P>ERROR; Couldn't open reserved list.";
+@temp = <TEMP>;
+close (TEMP);
+
 # Now generate a hash
 
 foreach $item (@temp) {
