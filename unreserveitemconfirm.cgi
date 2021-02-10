@@ -85,70 +85,9 @@ if (($ENV{'REMOTE_USER'} eq $reserveddetails[1]) or ("derekhelenatodd" =~ $ENV{'
 
     $time = scalar time();
     print "<P align=center><STRONG>Click <A href=\"unreserveitem.cgi?item=$selecteditem\">here</A></STRONG>";
-    
+    print "FORM action=\"unreserveitem.cgi\" method=post>";
+    print "INPUT type=submit value=\"Cancel Reservation\">";
+    print "</FORM>";
 }
 
-
-
-
-
-# Now, build a table
-foreach $item (@wedfile) {
-    my @list=split(/,/, $item);
-    $key=shift(@list);
-    $itemhasnotbeenreserved = 1;
-    $reserveddetails = ();
-    if (exists $reserveditems{$key}) {
-        @reserveddetails = @{  $reserveditems{$key} };
-        if ($reserveddetails[0] eq "reserve") {
-            $itemhasnotbeenreserved = 0;
-        }
-    }
-    if ($itemhasnotbeenreserved) {
-        $cellformat="<TD BGCOLOR=\"#ffffcc\"><P>";
-    }
-    elseif ($reserveddetails[1] eq $ENV('REMOTE_USER')) {
-        $cellformat = "<TD BGCOLOR=\"#99ccff\"><P>";
-    }
-    else {
-        $cellformat="<TD BGCOLOR=\"#acafff\"><P>";
-    }
-    if ($key eq "Iem Code") {
-        $cellformat="TD BGCOLOR=\"#6699ff\"><P ALIGN=CENTER>";
-    }
-    print "<TR>${cellformat}<B>$key</B></P></TD>";
-    foreach my $i (@list) {
-        print "${cellformat}$i</P><TD>" if ($i)
-        print "$cellformat&nbsp</P></TD>" unless ($i);
-    }
-    if ($key eq "Item Code") {
-        print "<TD></TD>";
-    }
-    elseif ($itemhasnotbeenreserved) {
-        print "${cellformat}Click <A HREF=\"http://www.todd.uklinux.net/wedlisttest/unreserveitemconfirm.cgi\></P></TD>";
-    }
-    elseif ($reserveddetails[1]) eq $ENV{'REMOTE_USER'}) {
-        print "${cellformat}Click <A HREF=\"http://www.todd.uklinux.net/wedlisttest/unreserveitemconfirm.cgi\></P></TD>";
-    }
-    elseif ($reserveddetails[1]) -~ $ENV{'REMOTE_USER'}) {
-        print "${cellformat}Click <A HREF=\"http://www.todd.uklinux.net/wedlisttest/unreserveitemconfirm.cgi\></P></TD>";
-    }
-    else {
-        print "${cellformat}This item has been reserved.</P></TD>";
-    }
-    print "</TR>\n";
-}
-
-
-
-# Now generate a hash
-%reserveditems=();
-foreach $item (@temp) {
-    my @list=split(/,/, $item);
-    $reserveditems{ shift (@list) }= \@list;
-}
-
-
-
-print "</TABLE>\n";
 print "</BODY></HTML>\n";
