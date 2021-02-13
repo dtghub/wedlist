@@ -7,18 +7,12 @@ use strict;
 my $item;
 my $itemhasnotbeenreserved;
 my @temp;
-my $temp;
 my $time;
 my $localtime;
 my $selecteditem;
-my $comments;
 my $new_reserved_item_details;
 my @reserveddetails;
 my %reserveditems;
-
-$ENV{PATH}='/sbin:/usr/sbin:/usr/bin:/usr/X11R6/bin:';
-$time = scalar time();
-$localtime = scalar localtime(time());
 
 print "Content-type; text/html\n\n";
 
@@ -26,39 +20,20 @@ print "<HTML><HEAD>\n<TITLE>";
 print "Item Reservation - Helen and Derek\'s wedding list.";
 print "</TITLE>\n</HEAD>";
 
-print "<BODY bgcolor=palegoldenrod>\n";
+print "<BODY bgcolor=palevioletred>\n";
 
 if ($ENV{'HTTP_REFERER'} !~ m#^http://www.todd.uklinux.net/#) {
     print "You may only enter this site via the homepage.\n </BODY></HTML>\n";
     exit;
 }
 
+$time = scalar time();
+$localtime = scalar localtime(time());
+
 # Get the ID of the item selected
 @temp=split(/==/,$ENV{QUERY_STRING});
 $selecteditem=$temp[1];
 
-# Get any comments made
-if ($ENV{'REQUEST_METHOD'} eq 'POST') {
-    read (STFIN, $temp, $ENV('CONTENT_LENGTH'));
-    @temp=split(/=/,$temp);
-    $comments=$temp[1];
-    $comments =~ tr/+/ /;
-    $comments =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C",hex($1))/eg;
-    $comments = "No comment made" unless $comments;
-    if ($comments =~ /^([a-fA-F0-9]\s.,()+}+)$/) {
-        $comments = $1;
-    }
-    else {
-        print "As a precaution against 'hackers' please enter letters and numbers only.";
-        print "<P align=center><STRONG>Click <A href=\"reserveitemconfirm.cgi?item=$selecteditem\">here</A></STRONG>";
-        print "</BODY></HTML>\n";
-        exit;
-    }
-}
-else {
-    $comments = "ERROR: Post method not used.";
-}
-$comments =~ s/,/;/g; # check syntax
 
 # Get the table details from a csv file and output as a perl data structure
 
@@ -77,15 +52,20 @@ foreach $item (@temp) {
     $reserveditems{ shift (@list) }= \@list;
 }
 
-# Check someone else hasn't beaten us to ths item!
+# Double check that it's safe to unreserve ths item!
 
 $itemhasnotbeenreserved= 1;
-if (exit $reserveditems{$selecteditem}) {
+if (exists $reserveditems{$selecteditem}) {
     @reserveddetails = @{ $reserveditems{$selecteditem} };
     if ($reserveddetails[0] eq "reserve") {
         $itemhasnotbeenreserved = 0;
     }
 }
+
+@reserveddetails = @{ $reserveditems{$selecteditem}};
+
+
+
 
 if ($itemhasnotbeenreserved) {
     # OK to 'unreserve' it; add transaction record to list.
