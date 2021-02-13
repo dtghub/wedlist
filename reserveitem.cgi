@@ -80,7 +80,7 @@ foreach $item (@temp) {
 # Check someone else hasn't beaten us to ths item!
 
 $itemhasnotbeenreserved= 1;
-if (exit $reserveditems{$selecteditem}) {
+if (exists $reserveditems{$selecteditem}) {
     @reserveddetails = @{ $reserveditems{$selecteditem} };
     if ($reserveddetails[0] eq "reserve") {
         $itemhasnotbeenreserved = 0;
