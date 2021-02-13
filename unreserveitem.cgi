@@ -64,10 +64,17 @@ if (exists $reserveditems{$selecteditem}) {
 
 @reserveddetails = @{ $reserveditems{$selecteditem}};
 
+my %missingclause = true; # need to work out what is missing from the next line!
 
 
-
-if ($itemhasnotbeenreserved) {
+if ($itemhasnotbeenreserved or (($ENV{'REMOTE_USER'} ne $reserveddetails[1]) and %missingclause)) {
+    
+    print "<P>Oops, somethings's gone wrong, I'm afraid. (Better explanation to go here)\n";
+    flock (RESERVEDITEMS, 8);
+    close (RESERVEDITEMS);
+    exit;
+}
+else {
     # OK to 'unreserve' it; add transaction record to list.
     $new_reserved_item_details=$selecteditem\,reserve\,$ENV{'REMOTE_USER'}\,$localtime; # check this
     foreach $item(keys %ENV) {
@@ -76,12 +83,9 @@ if ($itemhasnotbeenreserved) {
     }
     seek (RESERVEDITEMS, 0, 2);
     print RESERVEDITEMS "$new_reserved_item_details\n";
-}
-else {
-    print "<P>Oops, somethings's gone wrong, I'm afraid. (Better explanation to go here)\n";
-    flock (RESERVEDITEMS, 8);
-    close (RESERVEDITEMS);
-    exit;
+
+
+
 }
 flock (RESERVEDITEMS, 8);
 close (RESERVEDITEMS);
@@ -89,12 +93,12 @@ close (RESERVEDITEMS);
 open MAIL, "/usr/bin/sendmail -f" or die "<P> Error in emailing reservation. Please let us know, thanks! $!</P>\n";
 print MAIL, "To: made@up.email, addresses@@list\r\n";
 print MAIL, "From: Wedding List<made@up.email>\r\n";
-print MAIL, "Subject: Test2: $selecteditem\r\n\r\n";
+print MAIL, "Subject: Unreserve: $selecteditem\r\n\r\n";
 print MAIL, "$new_reserved_item_details\n";
 close MAIL or die "<P>ERROR; Couldn't complete EMail notification:$!</P>\n";
 
 print "<P>&nbsp;</P>\n";
-print "<P>&Thank you. Your selected item $selecteditem has been reserved.;</P>\n";
+print "<P>&Thank you. Your selected item $selecteditem has been released.;</P>\n";
 
 print "<P>&nbsp;</P>\n";
 print "<P>&nbsp;</P>\n";
